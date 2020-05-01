@@ -1,23 +1,29 @@
 import { createAppContainer } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
-import ActionList from "../screens/ActionList";
+import ColorPicker from "../components/ColorPicker";
+import Scheduler from "../components/Scheduler";
+import ViewSchedules from "../components/ViewSchedules";
+import AddDevice from "../screens/AddDevice";
 import CreateActionSet from "../screens/CreateActionSet";
 import CreateArea from "../screens/CreateArea";
 import CreateShortCut from "../screens/CreateShortCut";
-import ShortCutDetail from "../screens/ShortCutDetail";
-import TabScreen from "../screens/TabScreen";
+import HomeDetailScreen from "../screens/HomeDetailScreen";
+import HomeScreen from "../screens/HomeScreen";
 
 const navigator = createStackNavigator(
   {
-    HOME: TabScreen,
-    ACTION_LIST: ActionList,
+    HOME: HomeScreen,
     CREATE_SHORTCUT: CreateShortCut,
     CREATE_AREA: CreateArea,
-    SHORTCUT_DETAIL: ShortCutDetail,
-    CREATE_ACTION_SET: CreateActionSet
+    HOME_DETAIL: HomeDetailScreen,
+    CREATE_ACTION_SET: CreateActionSet,
+    ADD_DEVICE: AddDevice,
+    SCHEDULER: Scheduler,
+    COLOR_PICKER: ColorPicker,
+    VIEW_SCHEDULES: ViewSchedules
   },
   {
-    initialRouteName: "HOME",
+    initialRouteName: "SCHEDULER",
     headerLayoutPreset: "center"
   }
 );

@@ -1,23 +1,20 @@
 import React, { Component } from "react";
-import { Container, Content, Button, Switch, Icon } from "native-base";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  FlatList
-} from "react-native";
+import { Container, Content, Button, Switch, Icon, Card, CardItem } from "native-base";
+import { View, Text, TouchableOpacity, StyleSheet, FlatList } from "react-native";
+import { colors } from "../style/AppStyle";
+import ActionItem from "../components/ActionItem";
 
 export default class CreateActionSet extends Component {
+
   static navigationOptions = ({ navigation }) => {
     return {
       headerStyle: {
-        backgroundColor: "#1f1f1f"
+        backgroundColor: colors.headerColor
       },
-      headerTintColor: "#FFF",
+      headerTintColor: colors.white,
       headerRight: () => (
         <TouchableOpacity onPress={() => navigation.navigate("HOME")}>
-          <Text style={{ color: "#FFF", fontSize: 16, marginRight: 15 }}>
+          <Text style={{ color: colors.white, fontSize: 16, marginRight: 15 }}>
             Cancel
           </Text>
         </TouchableOpacity>
@@ -34,55 +31,17 @@ export default class CreateActionSet extends Component {
           </View>
           <FlatList
             data={DATA}
-            renderItem={({ item }) => <Item />}
+            renderItem={({ item }) => <ActionItem />}
             keyExtractor={item => item.id}
           />
         </Content>
         <Button block style={styles.saveBtn}>
-          <Text style={{ color: "white", fontSize: 20 }}>Next</Text>
+          <Text style={{ color: colors.white, fontSize: 20 }}>Save</Text>
         </Button>
       </Container>
     );
   }
 }
-
-class Item extends Component {
-  render() {
-    return (
-      <View style={{ marginBottom: 15, marginLeft: 15 }}>
-        <TouchableOpacity>
-          <View style={{ flex: 1, flexDirection: "row" }}>
-            <Text style={styles.itemTitle}> Grand Bedroom</Text>
-            <Icon
-              style={styles.titleIcon}
-              type="Entypo"
-              name="chevron-small-right"
-            />
-          </View>
-        </TouchableOpacity>
-        <View>
-          <FlatList
-            data={DATA}
-            renderItem={({ item }) => <ItemDetail />}
-            keyExtractor={item => item.id}
-          />
-        </View>
-      </View>
-    );
-  }
-}
-
-const ItemDetail = item => {
-  return (
-    <View style={{ flex: 1, flexDirection: "row", marginLeft: 10 }}>
-      <Switch trackColor={{ true: "lime", false: "white" }} value={false} />
-      <Text style={styles.deviceName}>Light</Text>
-      <Button>
-        <Text style={{ color: "white", fontSize: 20 }}>Add</Text>
-      </Button>
-    </View>
-  );
-};
 
 const DATA = [
   {
@@ -93,42 +52,29 @@ const DATA = [
     id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
     title: "Second Item"
   }
+  ,
+  {
+    id: "3ac68wafc-c605-48d3-a4f8-fbd91aa97f63",
+    title: "Third Item"
+  }
 ];
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#101010"
+    backgroundColor: colors.primaryBG
   },
   header: {
     marginTop: 40,
     marginLeft: 15
   },
   headerTxt: {
-    fontSize: 22,
-    color: "#FFF"
+    color: colors.buttonColor,
+    fontSize: 25
   },
   saveBtn: {
     minHeight: 60,
-    backgroundColor: "#175E17"
-  },
-  itemTitle: {
-    marginTop: 20,
-    fontSize: 15,
-    color: "#E9E9E9"
-  },
-  titleIcon: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    color: "#E9E9E9",
-    marginRight: 15,
-    marginTop: 20,
-    backgroundColor: "transparent"
-  },
-  deviceName: {
-    color: "#D3D3D3",
-    fontSize: 13,
-    marginLeft: 40
+    backgroundColor: colors.headerColor
   }
 });

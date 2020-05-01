@@ -7,43 +7,67 @@ import { withNavigation } from "react-navigation";
 import { colors } from "../style/AppStyle";
 
 class OtomeCard extends Component {
+  state = {
+    isOn: false
+  }
+  componentDidMount() {
+
+  }
+
+  _turnONShortcut = () => {
+    this.setState({
+      isOn: !this.state.isOn
+    })
+  }
   render() {
-    const { navigation, item } = this.props;
+    const { navigation, item, type } = this.props;
     return (
       <View style={styles.container}>
+        <View style={styles.card}>
+          {type === "Shortcuts" ? <Icon
+            style={this.state.isOn ? styles.powerIconON : styles.powerIconOFF}
+            size={22}
+            name="poweroff"
+            onPress={this._turnONShortcut}
+          /> : null}
+
+          <Text style={styles.title}>{item.name}</Text>
+        </View>
         <TouchableOpacity
           activeOpacity={1}
           onPress={() => {
-            navigation.navigate("SHORTCUT_DETAIL");
+            if (type === 'Shortcuts') {
+              navigation.navigate("HOME_DETAIL", {
+                type,
+                "id": item.id
+              });
+            } else if (type === 'Areas') {
+              navigation.navigate("HOME_DETAIL", {
+                type,
+                "name": item.name
+              });
+            }
           }}
         >
-          <Card style={styles.card}>
-            <Button
-              style={styles.powerBtn}
-              activeOpacity={1}
-              onPress={() => {
-                return;
-              }}
-            >
-              <Icon
-                size={22}
-                name="poweroff"
-                style={styles.powerIcon}
-                color={colors.white}
-              />
-            </Button>
-
-            <Text style={styles.title}>{item.title}</Text>
+          <View style={{
+            minHeight: 25,
+            maxHeight: 25,
+            backgroundColor: "#9CC3D5",
+            borderWidth: 2,
+            borderColor: "#9CC3D5",
+            borderBottomLeftRadius: 10,
+            borderBottomRightRadius: 10,
+            justifyContent: "center"
+          }}>
             <Icon
-              name="setting"
-              size={26}
-              color={colors.green}
-              style={styles.icon}
-              on
+              style={{ marginLeft: 5, color: colors.white }}
+              size={20}
+              name="arrowright"
             />
-          </Card>
+          </View>
         </TouchableOpacity>
       </View>
+
     );
   }
 }
@@ -58,21 +82,24 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: "column",
     justifyContent: "center",
-    alignContent: "center",
-    borderRadius: 10,
-    minHeight: 100,
-    maxHeight: 100,
-    backgroundColor: "#f0f0f0"
+    alignItems: "center",
+    minHeight: 80,
+    maxHeight: 80,
+    borderWidth: 2,
+    borderColor: colors.buttonColor,
+    borderTopRightRadius: 10,
+    borderTopLeftRadius: 10,
+    backgroundColor: colors.buttonColor,
+    flexWrap: "wrap"
   },
   title: {
-    color: colors.paleGreen,
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    marginLeft: 15,
-    marginBottom: 20,
-    fontSize: 14,
-    fontWeight: "bold"
+    color: colors.white,
+    // position: "absolute",
+    // top: 0,
+    // left: 0,
+    // marginLeft: 15,
+    marginTop: 10,
+    fontSize: 16,
   },
   icon: {
     position: "absolute",
@@ -81,19 +108,24 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginTop: 20
   },
-  powerIcon: {
-    backgroundColor: colors.lime
+  powerIconOFF: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    color: colors.white
+  },
+  powerIconON: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    color: "yellow"
   },
   powerBtn: {
-    justifyContent: "center",
     position: "absolute",
-    top: 0,
-    right: 0,
-    marginRight: 10,
-    marginTop: 10,
+    top: 10,
+    right: 10,
     width: 40,
     height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.lime
+    backgroundColor: "transparent"
   }
 });

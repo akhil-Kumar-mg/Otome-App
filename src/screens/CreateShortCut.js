@@ -1,20 +1,21 @@
 import { Button, Container, Content, Input, Item, View } from "native-base";
 import React, { Component } from "react";
 import { StyleSheet, Text } from "react-native";
-import Scheduler from "../components/Scheduler";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { withNavigation } from "react-navigation";
+import { colors } from "../style/AppStyle";
+import Scheduler from "../components/Scheduler";
 
 export default class CreateShortCut extends Component {
   static navigationOptions = ({ navigation }) => {
     return {
       headerStyle: {
-        backgroundColor: "#1f1f1f"
+        backgroundColor: colors.headerColor
       },
-      headerTintColor: "#FFF",
+      headerTintColor: colors.white,
       headerRight: () => (
         <TouchableOpacity onPress={() => navigation.navigate("HOME")}>
-          <Text style={{ color: "#FFF", fontSize: 16, marginRight: 15 }}>
+          <Text style={{ color: colors.white, fontSize: 16, marginRight: 15 }}>
             Cancel
           </Text>
         </TouchableOpacity>
@@ -23,6 +24,7 @@ export default class CreateShortCut extends Component {
   };
 
   render() {
+    const { navigation } = this.props
     return (
       <Container style={styles.container}>
         <Content>
@@ -31,14 +33,21 @@ export default class CreateShortCut extends Component {
           </View>
           <Item regular style={styles.inputBox}>
             <Input
-              style={{ color: "#696969" }}
+              style={{ fontSize: 15, marginLeft: 5 }}
               placeholder="Type shortcut name here"
+              placeholderTextColor={colors.buttonColor}
             />
           </Item>
-          <Scheduler />
+          <Button
+            style={styles.scheduleBtn}
+            onPress={() => navigation.navigate("SCHEDULER")}
+          >
+            <Text style={{ color: colors.white, fontSize: 20, fontWeight: "400" }}>Add a Schedule</Text>
+          </Button>
         </Content>
-        <Button block style={styles.nextButton}>
-          <Text style={{ color: "white", fontSize: 20 }}>Next</Text>
+        <Button block style={styles.nextButton}
+          onPress={() => navigation.navigate("CREATE_ACTION_SET")}>
+          <Text style={{ color: "white", fontSize: 18 }}>Next</Text>
         </Button>
       </Container>
     );
@@ -48,26 +57,35 @@ export default class CreateShortCut extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#101010"
+    backgroundColor: colors.primaryBG
   },
   heading: {
     flex: 1,
-    color: "#FFFFF1",
+    color: colors.buttonColor,
     marginTop: 100,
     marginLeft: 20,
     fontSize: 25
   },
   inputBox: {
     flex: 1,
-    borderColor: "#FFFFF1",
     marginTop: 15,
     marginLeft: 20,
     marginRight: 20,
     borderRadius: 4,
-    backgroundColor: "#FFFFF1"
+    minHeight: 60,
+    backgroundColor: colors.white
   },
   nextButton: {
     minHeight: 60,
-    backgroundColor: "#175E17"
+    backgroundColor: colors.headerColor
+  },
+  scheduleBtn: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 30,
+    marginLeft: 20,
+    marginRight: 20,
+    borderRadius: 10,
+    backgroundColor: colors.buttonColor
   }
 });

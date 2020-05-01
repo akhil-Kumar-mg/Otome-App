@@ -2,17 +2,37 @@ import { Button, Container, Content, Input, Item, View } from "native-base";
 import React, { Component } from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { withNavigation } from "react-navigation";
+import { colors } from "../style/AppStyle";
 
 class CreateArea extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      areaName: ""
+    }
+  }
+  handleChange = (text) => {
+    this.setState({
+      areaName: text
+    })
+  }
+  handleSubmit = () => {
+    if (this.state.areaName) {
+      this.props.navigation.navigate("ADD_DEVICE", {
+        "areaName": this.state.areaName
+      })
+    }
+  }
+
   static navigationOptions = ({ navigation }) => {
     return {
       headerStyle: {
-        backgroundColor: "#1f1f1f"
+        backgroundColor: colors.headerColor
       },
-      headerTintColor: "#FFF",
+      headerTintColor: colors.white,
       headerRight: () => (
         <TouchableOpacity onPress={() => navigation.navigate("HOME")}>
-          <Text style={{ color: "#FFF", fontSize: 16, marginRight: 15 }}>
+          <Text style={{ color: colors.white, fontSize: 16, marginRight: 15 }}>
             Cancel
           </Text>
         </TouchableOpacity>
@@ -20,7 +40,6 @@ class CreateArea extends Component {
     };
   };
   render() {
-    const { navigation } = this.props;
     return (
       <Container style={styles.container}>
         <Content>
@@ -29,17 +48,20 @@ class CreateArea extends Component {
           </View>
           <Item regular style={styles.inputBox}>
             <Input
-              style={{ color: "#696969" }}
+              value={this.state.areaName}
+              style={{ fontSize: 15, marginLeft: 5 }}
               placeholder="Type area name here"
+              placeholderTextColor={colors.buttonColor}
+              onChangeText={this.handleChange}
             />
           </Item>
         </Content>
         <Button
           block
           style={styles.nextButton}
-          onPress={() => navigation.navigate("CREATE_ACTION_SET")}
+          onPress={this.handleSubmit}
         >
-          <Text style={{ color: "white", fontSize: 20 }}>Next</Text>
+          <Text style={{ color: colors.white, fontSize: 20 }}>Next</Text>
         </Button>
       </Container>
     );
@@ -51,26 +73,26 @@ export default withNavigation(CreateArea);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#101010"
+    backgroundColor: colors.primaryBG
   },
   heading: {
     flex: 1,
-    color: "#FFFFF1",
+    color: colors.buttonColor,
     marginTop: 100,
     marginLeft: 20,
     fontSize: 25
   },
   inputBox: {
     flex: 1,
-    borderColor: "#FFFFF1",
     marginTop: 15,
     marginLeft: 20,
     marginRight: 20,
     borderRadius: 4,
-    backgroundColor: "#FFFFF1"
+    minHeight: 60,
+    backgroundColor: colors.white
   },
   nextButton: {
     minHeight: 60,
-    backgroundColor: "#175E17"
+    backgroundColor: colors.headerColor
   }
 });

@@ -12,12 +12,12 @@ export const EmptySection = props => {
     btnTxt = "Add an area";
   } else if (title == "Shortcuts") {
     btnTxt = "Add a Shortcut";
-  } else if (title == "Live Devices") {
+  } else if (title == "Live Devices" || title == "Devices") {
     btnTxt = "Add a device";
   }
   return (
     <View style={styles.container}>
-      <Icon name="addfile" size={70} color={colors.lime}></Icon>
+      <Icon name="addfile" size={70} color={colors.buttonColor}></Icon>
       <Text style={styles.displayNote}>{displayNote}</Text>
       <Button rounded style={styles.btn}>
         <Text style={styles.btnTxt}> {btnTxt}</Text>
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     height: Dimensions.get("window").height / 2 - 80
   },
   btn: {
-    backgroundColor: colors.lime,
+    backgroundColor: colors.buttonColor,
     margin: 15,
     width: 130,
     height: 30,
@@ -47,7 +47,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold"
   },
   displayNote: {
-    color: colors.lime,
+    marginTop: 5,
+    color: colors.buttonColor,
     fontSize: 12,
     fontWeight: "500"
   }
