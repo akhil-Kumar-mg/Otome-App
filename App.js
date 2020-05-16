@@ -1,21 +1,50 @@
-import { Container } from "native-base";
 import React, { Component } from "react";
 import Navigation from "./src/navigation";
-import { createStore } from 'redux';
-import { Provider } from 'react-redux'
-import rootReducer from './src/reducers/index';
+import { configureFonts, DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
+
 
 class App extends Component {
   render() {
     return (
-      <Provider store={createStore(rootReducer)}>
-        <Container>
-          <Navigation />
-        </Container>
-      </Provider>
+      <PaperProvider theme={theme}>
+        <Navigation />
+      </PaperProvider>
 
     );
   }
 }
+
+const fontConfig = {
+  default: {
+    regular: {
+      fontFamily: 'sans-serif',
+      fontWeight: 'normal',
+    },
+    medium: {
+      fontFamily: 'sans-serif-medium',
+      fontWeight: 'normal',
+    },
+    light: {
+      fontFamily: 'sans-serif-light',
+      fontWeight: 'normal',
+    },
+    thin: {
+      fontFamily: 'sans-serif-thin',
+      fontWeight: 'normal',
+    },
+  },
+};
+
+
+const theme = {
+  ...DefaultTheme,
+  roundness: 2,
+  fonts: configureFonts(fontConfig),
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#3498db',
+    accent: '#f1c40f',
+  },
+};
 
 export default App;

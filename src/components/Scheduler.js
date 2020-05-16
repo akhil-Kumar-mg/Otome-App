@@ -3,6 +3,8 @@ import React, { Component } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { colors } from "../style/AppStyle";
 import DateTimePicker from "./DateTimePicker";
+import Toast from 'react-native-simple-toast';
+import { addDateSchedule, addDaysSchedule, addIntervalSchedule } from '../api/ApiService';
 
 class Scheduler extends Component {
 
@@ -12,11 +14,11 @@ class Scheduler extends Component {
       date: {
         selectedDate: '',
         selectedTime: '',
-        scheduleName: ""
+        scheduleName: "",
+        YYYYMMDDdate: ''
       },
       days: {
         selectedTime: '',
-        selectedDate: '',
         scheduleName: "",
         mondaySelected: false,
         tuesdaySelected: false,
@@ -25,6 +27,7 @@ class Scheduler extends Component {
         fridaySelected: false,
         saturdaySelected: false,
         sundaySelected: false,
+        selectedDate: "",
         selectedDateArr: ['', '', '', '', '', '', '']
       },
       interval: {
@@ -37,13 +40,18 @@ class Scheduler extends Component {
         fridaySelected: false,
         saturdaySelected: false,
         sundaySelected: false,
+        intervalTimeHH: '',
+        intervalTimeMM: '',
+        intervalTimeSS: '',
         selectedDateArr: ['', '', '', '', '', '', '']
       },
       showTimePicker: false,
       showDatePicker: false,
       scheduleByDate: true,
       scheduleByDays: false,
-      scheduleByInterval: false
+      scheduleByInterval: false,
+      shortCutName: this.props.shortCutName,
+      shortCutId: this.props.shortCutId
     }
   }
   static navigationOptions = ({ navigation }) => {
@@ -52,7 +60,7 @@ class Scheduler extends Component {
       headerStyle: {
         backgroundColor: colors.headerColor,
       },
-      headerTintColor: colors.white
+      headerTintColor: colors.white,
     };
   };
 
@@ -106,24 +114,88 @@ class Scheduler extends Component {
       this.setState({
         date: tempState
       })
+    } else {
+      let tempState = this.state.interval;
+      Object.assign(tempState, { selectedTime: this.formatAMPM(date) })
+      this.setState({
+        interval: tempState
+      })
     }
 
   }
 
   handleSubmit = () => {
     if (this.state.scheduleByDate) {
+      const dateObj = this.state.date;
+      if (dateObj.scheduleName.length == 0 || dateObj.selectedDate.length == 0 || dateObj.selectedTime.length == 0) {
+        Toast.show("Please fill all the details")
+        return
+      }
+      addDateSchedule(dateObj.scheduleName, "TEST", "1", dateObj.selectedTime.substr(0, dateObj.selectedTime.length - 3), dateObj.YYYYMMDDdate).then(res => {
+        this.props.navigation.state.params.handleScheduleUpdate();
+        Toast.show("Added Schedule Successfully")
+      }).catch(error => {
+        Toast.show("Adding Schedule Failed")
 
+      })
+    } else if (this.state.scheduleByDays) {
+      const daysObj = this.state.days;
+      if (daysObj.selectedTime.length == 0 || daysObj.scheduleName.length == 0 || daysObj.selectedDate.length == 0) {
+        Toast.show("Please fill all the details")
+        return;
+      }
+      addDaysSchedule(daysObj.scheduleName, "TEST", 1, daysObj.selectedTime.substr(0, daysObj.selectedTime.length - 3), daysObj.selectedDateArr).then(res => {
+        this.props.navigation.state.params.handleScheduleUpdate();
+        Toast.show("Added Schedule Successfully")
+      }).catch(error => {
+        Toast.show("Adding Schedule Failed")
+
+      })
+    } else {
+      const intervalObj = this.state.interval;
+      if (intervalObj.selectedTime.length == 0 || intervalObj.scheduleName.length == 0 ||
+        intervalObj.intervalTimeHH.length == 0 || intervalObj.intervalTimeMM.length == 0 || intervalObj.intervalTimeSS.length == 0) {
+        Toast.show("Please fill all the details")
+        return;
+      }
+      if (intervalObj.intervalTimeHH.length != 2 && intervalObj.intervalTimeHH.length != 2 && intervalObj.intervalTimeHH.length != 2) {
+        Toast.show("Invalid Interval time");
+        return
+      }
+      addIntervalSchedule(intervalObj.scheduleName, "TEST", 1, intervalObj.selectedTime.substr(0, intervalObj.selectedTime.length - 3),
+        intervalObj.selectedDateArr, intervalObj.intervalTimeHH + ":" + intervalObj.intervalTimeMM + ":" + intervalObj.intervalTimeSS).then(res => {
+          this.props.navigation.state.params.handleScheduleUpdate();
+          Toast.show("Added Schedule Successfully")
+        }).catch(error => {
+          Toast.show("Adding Schedule Failed")
+
+        })
     }
   }
 
   handleDateInput = (date) => {
     let tempState = this.state.date;
     Object.assign(tempState, {
-      selectedDate: this.formatDate(date)
+      selectedDate: this.formatDate(date),
+      YYYYMMDDdate: this.formatDateToYYYYMMDD(date)
     })
     this.setState({
       date: tempState
     })
+  }
+
+  formatDateToYYYYMMDD = (date) => {
+    var d = new Date(date),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear();
+
+    if (month.length < 2)
+      month = '0' + month;
+    if (day.length < 2)
+      day = '0' + day;
+
+    return [year, month, day].join('-');
   }
 
   hideDateTimePicker = () => {
@@ -171,14 +243,39 @@ class Scheduler extends Component {
   }
 
   handleTextInput = (text) => {
-    this.setState({
-      scheduleName: text
-    })
+    if (this.state.scheduleByDate) {
+      const tempState = this.state.date;
+      Object.assign(tempState, { scheduleName: text })
+      this.setState({
+        date: tempState
+      })
+    } else if (this.state.scheduleByDays) {
+      const tempState = this.state.days;
+      Object.assign(tempState, { scheduleName: text })
+      this.setState({
+        days: tempState
+      })
+    } else {
+      const tempState = this.state.interval;
+      Object.assign(tempState, { scheduleName: text })
+      this.setState({
+        interval: tempState
+      })
+    }
+
   }
 
 
   render() {
-    console.debug(this.state)
+    let scheduleNameTxt = '';
+    if (this.state.scheduleByDate) {
+      scheduleNameTxt = this.state.date.scheduleName
+    } else if (this.state.scheduleByDays) {
+      scheduleNameTxt = this.state.days.scheduleName
+    } else {
+      scheduleNameTxt = this.state.interval.scheduleName
+    }
+    console.debug(this.state.interval)
     return (
       <Container style={styles.container}>
         <Content>
@@ -196,7 +293,35 @@ class Scheduler extends Component {
               onPress={() => this.setState({
                 scheduleByDate: true,
                 scheduleByDays: false,
-                scheduleByInterval: false
+                scheduleByInterval: false,
+                days: {
+                  selectedTime: '',
+                  selectedDate: '',
+                  scheduleName: "",
+                  mondaySelected: false,
+                  tuesdaySelected: false,
+                  wednesdaySelected: false,
+                  thursdaySelected: false,
+                  fridaySelected: false,
+                  saturdaySelected: false,
+                  sundaySelected: false,
+                  selectedDateArr: ['', '', '', '', '', '', '']
+                },
+                interval: {
+                  selectedTime: '',
+                  scheduleName: "",
+                  mondaySelected: false,
+                  tuesdaySelected: false,
+                  wednesdaySelected: false,
+                  thursdaySelected: false,
+                  fridaySelected: false,
+                  saturdaySelected: false,
+                  sundaySelected: false,
+                  intervalTimeHH: '',
+                  intervalTimeMM: '',
+                  intervalTimeSS: '',
+                  selectedDateArr: ['', '', '', '', '', '', '']
+                },
               })}
             >
               <Text style={this.state.scheduleByDate ? { color: colors.white, fontSize: 15 } :
@@ -213,7 +338,28 @@ class Scheduler extends Component {
               onPress={() => this.setState({
                 scheduleByDate: false,
                 scheduleByDays: true,
-                scheduleByInterval: false
+                scheduleByInterval: false,
+                date: {
+                  selectedDate: '',
+                  selectedTime: '',
+                  scheduleName: "",
+                  YYYYMMDDdate: ''
+                },
+                interval: {
+                  selectedTime: '',
+                  scheduleName: "",
+                  mondaySelected: false,
+                  tuesdaySelected: false,
+                  wednesdaySelected: false,
+                  thursdaySelected: false,
+                  fridaySelected: false,
+                  saturdaySelected: false,
+                  sundaySelected: false,
+                  intervalTimeHH: '',
+                  intervalTimeMM: '',
+                  intervalTimeSS: '',
+                  selectedDateArr: ['', '', '', '', '', '', '']
+                }
               })}>
               <Text style={this.state.scheduleByDays ? { color: colors.white, fontSize: 15 } :
                 { color: colors.buttonColor, fontSize: 15 }}>Days</Text>
@@ -231,7 +377,25 @@ class Scheduler extends Component {
               onPress={() => this.setState({
                 scheduleByDate: false,
                 scheduleByDays: false,
-                scheduleByInterval: true
+                scheduleByInterval: true,
+                date: {
+                  selectedDate: '',
+                  selectedTime: '',
+                  scheduleName: ""
+                },
+                days: {
+                  selectedTime: '',
+                  selectedDate: '',
+                  scheduleName: "",
+                  mondaySelected: false,
+                  tuesdaySelected: false,
+                  wednesdaySelected: false,
+                  thursdaySelected: false,
+                  fridaySelected: false,
+                  saturdaySelected: false,
+                  sundaySelected: false,
+                  selectedDateArr: ['', '', '', '', '', '', '']
+                }
               })}>
               <Text style={this.state.scheduleByInterval ? { color: colors.white, fontSize: 15 } :
                 { color: colors.buttonColor, fontSize: 15 }}>Interval</Text>
@@ -247,7 +411,7 @@ class Scheduler extends Component {
                 style={{ fontSize: 15, color: colors.buttonColor, fontWeight: "500", marginLeft: 5 }}
                 placeholder="Enter schedule name..."
                 placeholderTextColor={colors.buttonColor}
-                value={this.state.shortcutName}
+                value={scheduleNameTxt}
                 onChangeText={this.handleTextInput}
               />
             </Item>
@@ -266,6 +430,17 @@ class Scheduler extends Component {
           </Item> : null}
           {this.state.scheduleByDate ? <Item regular style={styles.inputBox}>
             {this.state.date.selectedTime.length ? <Text style={{ fontSize: 20, marginLeft: 15, color: colors.buttonColor, fontWeight: "800" }} >{this.state.date.selectedTime}</Text>
+              : <Text style={{ fontSize: 15, marginLeft: 10, color: colors.buttonColor }} >Select a Time</Text>
+            }
+            <Icon
+              style={styles.icon}
+              type="MaterialIcons"
+              name="timer"
+              onPress={() => this.setState({ showTimePicker: !this.state.showTimePicker })}
+            />
+          </Item> : null}
+          {this.state.scheduleByInterval ? <Item regular style={styles.inputBox}>
+            {this.state.interval.selectedTime.length ? <Text style={{ fontSize: 20, marginLeft: 15, color: colors.buttonColor, fontWeight: "800" }} >{this.state.interval.selectedTime}</Text>
               : <Text style={{ fontSize: 15, marginLeft: 10, color: colors.buttonColor }} >Select a Time</Text>
             }
             <Icon
@@ -294,7 +469,13 @@ class Scheduler extends Component {
             }}>
               <Input placeholder="HH" placeholderTextColor={colors.headerColor}
                 style={styles.timerInput}
-                keyboardType={'numeric'} />
+                keyboardType={'numeric'}
+                maxLength={2}
+                onChangeText={(text) => {
+                  let tempState = this.state.interval;
+                  Object.assign(tempState, { intervalTimeHH: text })
+                  this.setState({ interval: tempState });
+                }} />
               {/* <Text style={{ fontSize: 18, color: colors.buttonColor }} > XX </Text> */}
               <Text style={{
                 fontSize: 18, marginBottom: 20, color: colors.buttonColor
@@ -303,7 +484,13 @@ class Scheduler extends Component {
               <Input placeholder="MM"
                 placeholderTextColor={colors.headerColor}
                 style={styles.timerInput}
-                keyboardType={'numeric'} />
+                keyboardType={'numeric'}
+                maxLength={2}
+                onChangeText={(text) => {
+                  let tempState = this.state.interval;
+                  Object.assign(tempState, { intervalTimeMM: text })
+                  this.setState({ interval: tempState });
+                }} />
               <Text style={{
                 fontSize: 18, marginBottom: 20, color: colors.buttonColor
                 , fontWeight: "300", fontSize: 30
@@ -311,7 +498,13 @@ class Scheduler extends Component {
               <Input placeholder="SS"
                 placeholderTextColor={colors.headerColor}
                 style={styles.timerInput}
-                keyboardType={'numeric'} />
+                keyboardType={'numeric'}
+                maxLength={2}
+                onChangeText={(text) => {
+                  let tempState = this.state.interval;
+                  Object.assign(tempState, { intervalTimeSS: text })
+                  this.setState({ interval: tempState });
+                }} />
             </View> : null}
 
           {this.state.scheduleByDays ? <View style={{ marginLeft: 20, marginRight: 20, marginTop: 30, flex: 1, flexDirection: "row", justifyContent: "space-around" }}>

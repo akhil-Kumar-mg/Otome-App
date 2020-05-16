@@ -3,6 +3,7 @@ import React, { Component } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { colors } from "../style/AppStyle";
+import { toUpperCase, toLowerCase } from '../util/StringUtil';
 
 export default class AreaDetail extends Component {
     state = {
@@ -11,20 +12,20 @@ export default class AreaDetail extends Component {
     }
 
     componentDidMount() {
-        // const options = {
-        //     url: "http://13.232.56.9/api/v1/home/client?uuid=24956",
-        //     body: { "method": "GET", "url": "/VIEWGROUP", "query": { "g": this.props.name } }
-        // }
-        // fetch(options.url, {
-        //     method: "POST",
-        //     body: JSON.stringify(options.body)
-        // }).then(res => {
-        //     setTimeout(this.getDeviceList, 1000)
-        // }).catch(error => {
-        //     this.setState({
-        //         deviceList: []
-        //     })
-        // })
+        const options = {
+            url: "http://13.232.56.9/api/v1/home/client?uuid=24956",
+            body: { "method": "GET", "url": "/VIEWGROUP", "query": { "g": this.props.name } }
+        }
+        fetch(options.url, {
+            method: "POST",
+            body: JSON.stringify(options.body)
+        }).then(res => {
+            setTimeout(this.getDeviceList, 1000)
+        }).catch(error => {
+            this.setState({
+                deviceList: []
+            })
+        })
     }
 
     getDeviceList = () => {
@@ -89,23 +90,28 @@ export default class AreaDetail extends Component {
 }
 
 const Device = item => {
+    let status = item.item.value;
     return (
-        <View style={{
-            flex: 1, flexDirection: "row",
-            marginLeft: 20, marginRight: 15
-        }}>
-            <Text style={styles.deviceName}>{item.item.name}</Text>
-            <Switch value={item.item.status} style={styles.deviceStatus} />
+        <View style={{ flex: 1, flexDirection: "row", alignItems: "center", marginLeft: 15, marginRight: 20, minHeight: 80, marginBottom: 5, maxHeight: 80, backgroundColor: colors.white, borderBottomRightRadius: 8, borderTopRightRadius: 10 }}>
+            <View >
+                <Icon
+                    style={{ color: colors.buttonColor, marginLeft: 20, marginRight: 5, fontSize: 50 }}
+                    type="Octicons"
+                    name="device-mobile"
+                />
+            </View>
+
+            <View style={{ marginLeft: 20 }}>
+                <Text style={{ color: colors.buttonColor, fontSize: 16, fontWeight: "300" }}>{toUpperCase(item.item.name)}</Text>
+            </View>
+            <View style={{ position: "absolute", right: 20 }}>
+                <Switch disabled value={status === "ON" ? true : false} trackColor={{ true: "#A8A8A8", false: "#A8A8A8" }} thumbColor={colors.buttonColor}
+                />
+                <Text style={{ color: colors.buttonColor, fontWeight: "500", marginTop: 5, fontSize: 12, marginLeft: 5 }}>{status}</Text>
+            </View>
         </View>
     );
 };
-
-const DATA = [
-    {
-        id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-        title: "First Item"
-    }
-];
 
 const styles = StyleSheet.create({
     itemTitle: {

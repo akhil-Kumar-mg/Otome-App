@@ -8,7 +8,7 @@ import { colors } from "../style/AppStyle";
 
 export default class AreaScreen extends Component {
   static navigationOptions = {
-    tabBarLabel: "Areas",
+    tabBarLabel: "AREAS",
     tabBarIcon: ({ tintColor }) => (
       <Icon name="fan" size={25} color={colors.white} />
     )

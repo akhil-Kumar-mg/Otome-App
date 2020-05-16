@@ -1,28 +1,14 @@
-import { Button, Container, Content, Input, Item, View } from "native-base";
 import React, { Component } from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Button, HelperText, TextInput, Surface } from 'react-native-paper';
 import { withNavigation } from "react-navigation";
 import { colors } from "../style/AppStyle";
 
 class CreateArea extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      areaName: ""
-    }
-  }
-  handleChange = (text) => {
-    this.setState({
-      areaName: text
-    })
-  }
-  handleSubmit = () => {
-    if (this.state.areaName) {
-      this.props.navigation.navigate("ADD_DEVICE", {
-        "areaName": this.state.areaName
-      })
-    }
-  }
+
+  state = {
+    areaName: ''
+  };
 
   static navigationOptions = ({ navigation }) => {
     return {
@@ -30,6 +16,7 @@ class CreateArea extends Component {
         backgroundColor: colors.headerColor
       },
       headerTintColor: colors.white,
+      title: "Create an Area",
       headerRight: () => (
         <TouchableOpacity onPress={() => navigation.navigate("HOME")}>
           <Text style={{ color: colors.white, fontSize: 16, marginRight: 15 }}>
@@ -38,32 +25,55 @@ class CreateArea extends Component {
         </TouchableOpacity>
       )
     };
-  };
+  }
+
+  _onChangeText = text => this.setState({ areaName: text });
+
+  _hasErrors = () => {
+    return this.state.areaName.length == 0 ? true : false;
+  }
+
+  _handleSubmit = () => {
+    if (this.state.areaName) {
+      this.props.navigation.navigate("ADD_DEVICE", {
+        "areaName": this.state.areaName
+      })
+    }
+  }
+
   render() {
+    const { theme } = this.props;
     return (
-      <Container style={styles.container}>
-        <Content>
-          <View>
-            <Text style={styles.heading}>Create an area</Text>
-          </View>
-          <Item regular style={styles.inputBox}>
-            <Input
+      <Surface style={styles.container}>
+        <View style={styles.area}>
+          <View style={styles.inputBox}>
+            <TextInput
+              label="Area Name"
               value={this.state.areaName}
-              style={{ fontSize: 15, marginLeft: 5 }}
-              placeholder="Type area name here"
-              placeholderTextColor={colors.buttonColor}
-              onChangeText={this.handleChange}
+              style={styles.textArea}
+              onChangeText={this._onChangeText}
+              underlineColor={colors.buttonColor}
             />
-          </Item>
-        </Content>
-        <Button
-          block
-          style={styles.nextButton}
-          onPress={this.handleSubmit}
-        >
-          <Text style={{ color: colors.white, fontSize: 20 }}>Next</Text>
-        </Button>
-      </Container>
+            <HelperText
+              type="error"
+              visible={this._hasErrors()}
+            >
+              Area name can't be empty!
+        </HelperText>
+          </View>
+        </View>
+        <View style={styles.saveArea}>
+          <Button
+            style={styles.saveBtn}
+            contentStyle={{ height: 60, minHeight: 60 }}
+            labelStyle={{ color: colors.white, fontSize: 18 }}
+            mode="contained"
+            onPress={() => console.log('Pressed')}>
+            Save
+          </Button>
+        </View>
+
+      </Surface>
     );
   }
 }
@@ -73,26 +83,32 @@ export default withNavigation(CreateArea);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.primaryBG
-  },
-  heading: {
-    flex: 1,
-    color: colors.buttonColor,
-    marginTop: 100,
-    marginLeft: 20,
-    fontSize: 25
-  },
-  inputBox: {
-    flex: 1,
-    marginTop: 15,
-    marginLeft: 20,
-    marginRight: 20,
-    borderRadius: 4,
-    minHeight: 60,
     backgroundColor: colors.white
   },
-  nextButton: {
-    minHeight: 60,
+  inputBox: {
+    backgroundColor: colors.white,
+    marginLeft: 20,
+    marginRight: 20
+  },
+  area: {
+    color: colors.white,
+    marginTop: 15
+  },
+  saveArea: {
+    position: "absolute",
+    width: "100%",
+    bottom: 0,
+    flexDirection: "column",
+    justifyContent: "center",
+    alignContent: "center",
+    backgroundColor: colors.white
+  },
+  textArea: {
+    backgroundColor: colors.white,
+    color: colors.white
+  },
+  saveBtn: {
+    flex: 1,
     backgroundColor: colors.headerColor
   }
 });

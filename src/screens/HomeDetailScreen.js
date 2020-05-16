@@ -27,7 +27,8 @@ export default class HomeDetailScreen extends Component {
         const { navigation } = this.props;
         return (
             <Container style={styles.container}>
-                {navigation.getParam('type') === 'Shortcuts' ? <ShortCutDetail id={navigation.getParam('id')} /> : null}
+                {navigation.getParam('type') === 'Shortcuts' ?
+                    <ShortCutDetail id={navigation.getParam('id')} name={navigation.getParam('name')} /> : null}
                 {navigation.getParam('type') === 'Areas' ? <AreaDetail name={navigation.getParam('name')} /> : null}
             </Container>
         );

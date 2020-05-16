@@ -1,58 +1,46 @@
 import React, { Component } from "react";
-import { Fab, Button } from "native-base";
-import { View, Text } from "react-native";
+import { FAB } from 'react-native-paper';
 import { colors } from "../style/AppStyle";
-import Icon from 'react-native-vector-icons/MaterialIcons';
-
+import { StyleSheet } from 'react-native';
 export default class FloatingButton extends Component {
 
   state = {
-    active: false
-  }
+    open: false,
+  };
 
-  // componentDidMount() {
-  //   this.setState({
-  //     active: true
-  //   })
-  //   this.setState({
-  //     active: false
-  //   })
-  // }
-  componentWillUnmount() {
-    this.setState({
-      active: false
-    })
-  }
+  _onStateChange = ({ open }) => this.setState({ open });
 
   render() {
+    const { open } = this.state;
     const { navigate } = this.props.navigation;
     return (
-      <View style={{ flex: 1 }}>
-        <Fab
-          active={this.state.active}
-          direction="up"
-          style={{ backgroundColor: colors.white }}
-          position="bottomRight"
-          onPress={() => {
-            this.setState({
-              active: !this.state.active
-            })
-          }}
-        >
-          <Icon name="add" style={{ color: colors.buttonColor }} />
-          <Button style={{ backgroundColor: '#34A34F' }} onPress={() => navigate("CREATE_SHORTCUT")}>
-            <Icon name="group" size={25} color={colors.white} />
-          </Button>
-          <Button style={{ backgroundColor: '#3B5998' }} onPress={() => navigate("CREATE_AREA")}>
-            <Icon name="person" size={25} color={colors.white} />
-          </Button>
-          <Button style={{ backgroundColor: '#DD5144' }}
-            onPress={() => navigate("ADD_DEVICE")}>
-            <Icon name="devices" size={25} color={colors.white} />
-          </Button>
 
-        </Fab>
-      </View>
+      <FAB.Group
+        open={open}
+        icon="scale-bathroom"
+        color={colors.buttonColor}
+        fabStyle={styles.iconStyle}
+        actions={[
+          { icon: 'scale-bathroom', label: 'Add a Device', onPress: () => navigate("ADD_DEVICE"), color: colors.buttonColor },
+          { icon: 'scale-bathroom', label: 'Add a ShortCut', onPress: () => navigate("CREATE_SHORTCUT"), color: colors.buttonColor },
+          { icon: 'scale-bathroom', label: 'Add an Area', onPress: () => navigate("CREATE_AREA"), color: colors.buttonColor },
+        ]}
+        onStateChange={this._onStateChange}
+        onPress={() => {
+          if (open) {
+            // do something if the speed dial is open
+          }
+        }}
+      />
+
     );
   }
 }
+
+const styles = StyleSheet.create({
+  iconStyle: {
+    color: colors.buttonColor,
+    backgroundColor: colors.white
+  }
+
+})

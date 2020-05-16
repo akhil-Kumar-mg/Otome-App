@@ -11,7 +11,7 @@ export default class Section extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>{title}</Text>
+          {/* <Text style={styles.headerTitle}>{title}</Text> */}
         </View>
         <View style={styles.itemListContainer}>
           {data.length == 0 ? (

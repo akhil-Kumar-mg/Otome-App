@@ -39,7 +39,8 @@ class OtomeCard extends Component {
             if (type === 'Shortcuts') {
               navigation.navigate("HOME_DETAIL", {
                 type,
-                "id": item.id
+                "id": item.id,
+                "name": item.name
               });
             } else if (type === 'Areas') {
               navigation.navigate("HOME_DETAIL", {

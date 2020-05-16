@@ -1,8 +1,11 @@
+import { Item } from "native-base";
+
 export const toUpperCase = (str) => {
     return str.toUpperCase();
 }
 
 export const toLowerCase = (str) => {
+    if (str == undefined) return '';
     return str.toLowerCase();
 }
 

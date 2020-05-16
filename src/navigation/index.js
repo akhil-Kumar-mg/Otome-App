@@ -23,7 +23,7 @@ const navigator = createStackNavigator(
     VIEW_SCHEDULES: ViewSchedules
   },
   {
-    initialRouteName: "SCHEDULER",
+    initialRouteName: "ADD_DEVICE",
     headerLayoutPreset: "center"
   }
 );

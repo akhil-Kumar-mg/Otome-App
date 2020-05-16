@@ -8,7 +8,7 @@ import ShortCutTabScreen from "./ShortCutTabScreen";
 
 export default createMaterialTopTabNavigator(
   {
-    Home: HomeTabScreen,
+    // Home: HomeTabScreen,
     Devices: DeviceTabScreen,
     Shortcuts: ShortCutTabScreen,
     Areas: AreaTabScreen
@@ -26,11 +26,11 @@ export default createMaterialTopTabNavigator(
         backgroundColor: colors.headerColor,
       },
       tabStyle: {
-        width: Dimensions.get("window").width / 4
+        width: Dimensions.get("window").width / 3
       },
       labelStyle: {
-        fontSize: 14,
-        fontWeight: "500",
+        fontSize: 13,
+        // fontWeight: "500",
         textAlign: "center",
         padding: 0
       },

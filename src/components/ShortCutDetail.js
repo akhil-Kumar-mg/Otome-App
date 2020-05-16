@@ -1,11 +1,14 @@
-import { Icon, Switch, Button } from "native-base";
+import { Icon, Switch } from "native-base";
 import React, { Component } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, StyleSheet, Text, View, ActivityIndicator, Dimensions } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { colors } from "../style/AppStyle";
 import { withNavigation } from "react-navigation";
+import { Drawer, Button } from 'react-native-paper';
+import { toUpperCase } from '../util/StringUtil'
 
 class ShortCutDetail extends Component {
+
     componentDidMount() {
         const ShortCutOption = {
             url: "http://13.232.56.9/api/v1/home/client?uuid=24956",
@@ -15,10 +18,11 @@ class ShortCutDetail extends Component {
             method: "POST",
             body: JSON.stringify(ShortCutOption.body)
         }).then(res => {
-            setTimeout(this.getSceneDetails, 1000)
+            setTimeout(this.getSceneDetails, 2000)
         }).catch(error => {
             this.setState({
-                sceneDetail: {}
+                sceneDetail: {},
+                loading: false
             })
         })
     }
@@ -38,7 +42,8 @@ class ShortCutDetail extends Component {
         }
         this.setState({
             groups,
-            sceneDetail: map
+            sceneDetail: map,
+            loading: false
         })
     }
 
@@ -51,34 +56,49 @@ class ShortCutDetail extends Component {
                 this.setShortCutDetails(res.scene_details);
             }).catch(error => {
                 this.setState({
-                    sceneDetail: {}
+                    sceneDetail: {},
+                    loading: false
                 })
             })
     }
     state = {
-        sceneDetail: {}
+        groups: [],
+        sceneDetail: {},
+        loading: true
     }
     render() {
         const { navigation } = this.props;
-        console.debug(navigation)
         return (
             <View>
-                <View >
-                    <View>
-                        <Button
-                            style={styles.viewScheduleBtn}
-                            onPress={() => navigation.navigate("VIEW_SCHEDULES")}
-                        >
-                            <Text style={{ color: colors.white, fontSize: 20, fontWeight: "400" }}>View Schedules</Text>
+                <View style={{ flexDirection: "row", justifyContent: "center", alignContent: "center", marginTop: 15, marginBottom: 10 }}>
+
+                    <View style={{
+                        flex: 1, alignContent: "center", justifyContent: "center"
+                    }}>
+                        <Button icon="eye" mode="text" labelStyle={{ fontSize: 13 }}
+                            onPress={() => navigation.navigate("VIEW_SCHEDULES", {
+                                "id": this.props.id,
+                                "name": this.props.name
+                            })}>
+                            View Schedules
                         </Button>
                     </View>
                 </View>
+                <View
+                    style={{
+                        borderBottomColor: colors.white,
+                        borderBottomWidth: 3,
+                    }}
+                />
                 <View style={{ marginBottom: 15 }}>
-                    <FlatList
-                        data={this.state.groups}
-                        renderItem={({ item }) => <ShortCut title={item.title} devices={this.state.sceneDetail[item.title].devices} />}
-                        keyExtractor={item => item.id}
-                    />
+                    {
+                        this.state.loading ? <ActivityIndicator size="large" color={colors.headerColor} /> :
+                            <FlatList
+                                data={this.state.groups}
+                                renderItem={({ item }) => <DeviceList title={item.title} devices={this.state.sceneDetail[item.title].devices} />}
+                                keyExtractor={item => item.id}
+                            />
+                    }
                 </View>
             </View>
         );
@@ -87,7 +107,8 @@ class ShortCutDetail extends Component {
 
 export default withNavigation(ShortCutDetail);
 
-class ShortCut extends Component {
+class
+    DeviceList extends Component {
     state = {
         expand: false
     }
@@ -106,7 +127,7 @@ class ShortCut extends Component {
                         flex: 1, flexDirection: "row", height: 60, backgroundColor: colors.buttonColor, borderWidth: 2, borderColor: colors.buttonColor,
                         borderRadius: 10, marginLeft: 10, marginRight: 10
                     }}>
-                        <Text style={styles.itemTitle}>{this.props.title}</Text>
+                        <Text style={styles.itemTitle}>{toUpperCase(this.props.title)}</Text>
                         <Icon
                             style={styles.titleIcon}
                             type="Entypo"
@@ -114,10 +135,10 @@ class ShortCut extends Component {
                         />
                     </View>
                 </TouchableOpacity>
-                {this.state.expand ? <View>
+                {this.state.expand ? <View style={{ marginTop: 5 }}>
                     <FlatList
                         data={this.props.devices}
-                        renderItem={({ item }) => <ShortCutItem item={item} />}
+                        renderItem={({ item }) => <Device item={item} />}
                         keyExtractor={item => item.id}
                     />
                 </View> : null}
@@ -127,22 +148,33 @@ class ShortCut extends Component {
     }
 }
 
-const ShortCutItem = item => {
-    console.debug(item)
+const Device = item => {
+    let status = item.item.value;
     return (
-        <View style={{
-            flex: 1, flexDirection: "row",
-            marginLeft: 20, marginRight: 15
-        }}>
-            <Text style={styles.deviceName}>{item.item.name}</Text>
-            <Switch value={item.item.value} style={styles.deviceStatus} />
+        <View style={{ flex: 1, flexDirection: "row", alignItems: "center", marginLeft: 15, marginRight: 20, minHeight: 80, marginBottom: 5, maxHeight: 80, backgroundColor: colors.white, borderBottomRightRadius: 8, borderTopRightRadius: 10 }}>
+            <View >
+                <Icon
+                    style={{ color: colors.buttonColor, marginLeft: 20, marginRight: 5, fontSize: 50 }}
+                    type="Octicons"
+                    name="device-mobile"
+                />
+            </View>
+
+            <View style={{ marginLeft: 20 }}>
+                <Text style={{ color: colors.buttonColor, fontSize: 16, fontWeight: "300" }}>{toUpperCase(item.item.name)}</Text>
+            </View>
+            <View style={{ position: "absolute", right: 20 }}>
+                <Switch disabled value={status === "ON" ? true : false} trackColor={{ true: "#A8A8A8", false: "#A8A8A8" }} thumbColor={colors.buttonColor}
+                />
+                <Text style={{ color: colors.buttonColor, fontWeight: "500", marginTop: 5, fontSize: 12, marginLeft: 5 }}>{status}</Text>
+            </View>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     itemTitle: {
-        marginLeft: 10,
+        marginLeft: 20,
         marginTop: 15,
         fontSize: 16,
         fontWeight: "500",
@@ -214,13 +246,6 @@ const styles = StyleSheet.create({
         justifyContent: "center"
     },
     viewScheduleBtn: {
-        marginLeft: 30,
-        marginRight: 30,
-        marginTop: 20,
-        marginBottom: 20,
-        backgroundColor: colors.buttonColor,
-        borderRadius: 10,
-        flexDirection: "row",
-        justifyContent: "center"
+        backgroundColor: "transparent"
     }
 });
