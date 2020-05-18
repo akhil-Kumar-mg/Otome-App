@@ -3,11 +3,13 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Button, HelperText, TextInput, Surface } from 'react-native-paper';
 import { withNavigation } from "react-navigation";
 import { colors } from "../style/AppStyle";
+import { createArea } from "../api/ApiService";
 
 class CreateArea extends Component {
 
   state = {
-    areaName: ''
+    areaName: '',
+    invalidAreaName: false
   };
 
   static navigationOptions = ({ navigation }) => {
@@ -27,18 +29,29 @@ class CreateArea extends Component {
     };
   }
 
-  _onChangeText = text => this.setState({ areaName: text });
-
-  _hasErrors = () => {
-    return this.state.areaName.length == 0 ? true : false;
-  }
-
-  _handleSubmit = () => {
-    if (this.state.areaName) {
-      this.props.navigation.navigate("ADD_DEVICE", {
-        "areaName": this.state.areaName
+  _onChangeText = text => {
+    if (text == '') {
+      this.setState({
+        areaName: text,
+        invalidAreaName: true
+      })
+    } else {
+      this.setState({
+        areaName: text,
+        invalidAreaName: false
       })
     }
+  };
+
+  _handleSubmit = () => {
+    if (this.state.areaName.length == 0) {
+      this.setState({
+        invalidAreaName: true
+      })
+      return;
+    }
+    createArea(this.state.areaName);
+    this.props.navigation.navigate("HOME")
   }
 
   render() {
@@ -53,13 +66,18 @@ class CreateArea extends Component {
               style={styles.textArea}
               onChangeText={this._onChangeText}
               underlineColor={colors.buttonColor}
-            />
-            <HelperText
-              type="error"
-              visible={this._hasErrors()}
-            >
-              Area name can't be empty!
-        </HelperText>
+              theme={{ colors: { text: colors.buttonColor, placeholder: colors.headerColor } }}
+
+            />{
+              this.state.invalidAreaName ?
+                <HelperText
+                  type="error"
+                  visible={this.state.invalidAreaName}
+                >
+                  Area name can't be empty!
+        </HelperText> : null
+            }
+
           </View>
         </View>
         <View style={styles.saveArea}>
@@ -68,7 +86,7 @@ class CreateArea extends Component {
             contentStyle={{ height: 60, minHeight: 60 }}
             labelStyle={{ color: colors.white, fontSize: 18 }}
             mode="contained"
-            onPress={() => console.log('Pressed')}>
+            onPress={this._handleSubmit}>
             Save
           </Button>
         </View>

@@ -110,7 +110,7 @@ export default class CreateShortCut extends Component {
               Shortcut name can't be empty!
         </HelperText>
             {/* <ScrollView style={{ marginTop: 20 }}> */}
-            <List.Section title="Select devices">
+            <List.Section title="Available Groups">
               <FlatList
                 extraData={this.state}
                 data={this.state.groupList}

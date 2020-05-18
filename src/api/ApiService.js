@@ -137,7 +137,6 @@ export const addIntervalSchedule = (scheduleName, shortCutName, shortCutId, time
 
         }
     }
-    console.debug(options)
     return fetch(options.url, {
         method: "POST",
         body: JSON.stringify(options.body)
@@ -152,5 +151,21 @@ export const viewSchedules = () => {
     return fetch(options.url, {
         method: "POST",
         body: JSON.stringify(options.body)
+    })
+}
+
+export const createArea = (areaName) => {
+    const options = {
+        url: "http://13.232.56.9/api/v1/home/client?uuid=24956",
+        body: { "method": "POST", "data": { "request_type": "add", "entity": "group", "name": areaName, "icon": "13" } }
+    }
+
+    fetch(options.url, {
+        method: "POST",
+        body: JSON.stringify(options.body)
+    }).then(res => {
+        Toast.show("Area Created")
+    }).catch(err => {
+        Toast.show("Failed to create area")
     })
 }
